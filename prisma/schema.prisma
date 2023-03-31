@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// MasterCatalog table
+model Item {
+  itemID    Int      @id @default(autoincrement())
+  itemName  String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     Sale[]
+}
+
+// Catalog table
+model Show {
+  id        Int      @id
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sales     Sale[]
+}
+
+model Sale {
+  id        Int      @id @default(autoincrement())
+  showId    Int
+  show      Show     @relation(fields: [showId], references: [id])
+  itemId    Int
+  item      Item     @relation(fields: [itemId], references: [itemID])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
